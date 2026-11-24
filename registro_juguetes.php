@@ -123,6 +123,10 @@ foreach ($invRows as $r) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Juguetes - ToysWa Bolivia</title>
     <link rel="stylesheet" href="estilos.css">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 </head>
 <body>
     <header class="navbar">
