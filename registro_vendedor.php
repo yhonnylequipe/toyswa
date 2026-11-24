@@ -191,4 +191,40 @@ $vendedores = $pdo->query("
         </div>
     </main>
 </body>
+    <nav class="app-bottom-nav">
+    <a href="index.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'activo' : '' ?>">
+        <span class="tab-icon">🏪</span>
+        <span>Catálogo</span>
+    </a>
+    <?php if (estaLogueado()): ?>
+        <a href="registro_juguetes.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'registro_juguetes.php' ? 'activo' : '' ?>">
+            <span class="tab-icon">📦</span>
+            <span>Juguetes</span>
+        </a>
+        <a href="registro_vendedor.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'registro_vendedor.php' ? 'activo' : '' ?>">
+            <span class="tab-icon">👥</span>
+            <span>Vendedores</span>
+        </a>
+        <a href="login.php?logout=1" class="app-tab">
+            <span class="tab-icon">🚪</span>
+            <span>Salir</span>
+        </a>
+    <?php else: ?>
+        <a href="registro_vendedor.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'registro_vendedor.php' ? 'activo' : '' ?>">
+            <span class="tab-icon">👤</span>
+            <span>Registro</span>
+        </a>
+        <a href="login.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'login.php' ? 'activo' : '' ?>">
+            <span class="tab-icon">🔐</span>
+            <span>Ingresar</span>
+        </a>
+    <?php endif; ?>
+</nav>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+</script>
+
 </html>
