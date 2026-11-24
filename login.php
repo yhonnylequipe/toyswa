@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </p>
         </div>
     </main>
-</body>
+
     <nav class="app-bottom-nav">
     <a href="index.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'activo' : '' ?>">
         <span class="tab-icon">🏪</span>
@@ -144,5 +144,5 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
 }
 </script>
-
+</body>
 </html>
