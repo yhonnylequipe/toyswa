@@ -167,6 +167,10 @@ if (esVendedorOAdmin()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToysWa Bolivia - Catálogo y Reservas</title>
     <link rel="stylesheet" href="estilos.css">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 </head>
 <body>
 
