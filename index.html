@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToysWa Bolivia - Galería, Reservas y Administración</title>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0a58ca;
+            --warning: #ffc107;
+            --warning-hover: #e0a800;
+            --success: #198754;
+            --danger: #dc3545;
+            --dark: #212529;
+            --bg-body: #f4f7f9;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .nav-acciones {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .subtitulo {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .btn-admin-toggle {
+            background-color: rgba(255, 255, 255, 0.18);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-admin-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-admin-toggle.activo {
+            background-color: var(--warning);
+            color: var(--dark);
+            border-color: var(--warning);
+        }
+
+        /* ALERTA */
+        .alerta {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alerta.error {
+            background-color: #f8d7da;
+            color: #842029;
+            border-color: #f5c2c7;
+        }
+
+        .btn-cerrar-alerta {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        /* FILTROS */
+        .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .filtros-titulo {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .btn-filtro {
+            padding: 6px 14px;
+            border: 1px solid var(--primary);
+            background-color: white;
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-filtro:hover,
+        .btn-filtro.activo {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* GALERÍA */
+        .galeria {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+
+        .card-juguete {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card-juguete:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .img-juguete {
+            width: 100%;
+            height: 190px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+        }
+
+        .img-juguete .icono-juguete {
+            font-size: 3.4rem;
+            margin-bottom: 6px;
+        }
+
+        .tema-azul { background-color: #e3f2fd; color: #0d6efd; }
+        .tema-amarillo { background-color: #fff3cd; color: #856404; }
+        .tema-rosa { background-color: #f8d7da; color: #721c24; }
+        .tema-verde { background-color: #d1e7dd; color: #0f5132; }
+        .tema-gris { background-color: #e2e3e5; color: #383d41; }
+
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .marca {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .badge-edad {
+            background-color: #ff6b6b;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .titulo-juguete {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .categoria-texto {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .card-footer {
+            margin-top: auto;
+        }
+
+        .precio-stock {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .precio {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .badge-stock {
+            font-size: 0.78rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .badge-stock.disponible { background-color: var(--success); }
+        .badge-stock.agotado { background-color: var(--text-muted); }
+
+        .btn-reservar {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--warning);
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #212529;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-reservar:hover:not(:disabled) { background-color: var(--warning-hover); }
+        .btn-reservar:disabled {
+            background-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        /* PANEL ADMINISTRATIVO */
+        .admin-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            margin-bottom: 50px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 2px solid var(--bg-body);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-tab {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        .btn-tab.activo {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .admin-grid-2 {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 850px) {
+            .admin-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-admin {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .card-admin h3 {
+            margin-bottom: 14px;
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+        }
+
+        .tabla-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #e9ecef;
+            font-weight: 700;
+        }
+
+        .input-tabla {
+            width: 90px;
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-guardar { background-color: var(--primary); }
+        .btn-guardar:hover { background-color: var(--primary-dark); }
+        .btn-pagar { background-color: var(--success); }
+        .btn-anular { background-color: var(--danger); }
+
+        .badge-estado {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+        }
+
+        .estado-Reservada { background-color: #fd7e14; }
+        .estado-Completada { background-color: var(--success); }
+        .estado-Anulada { background-color: var(--danger); }
+
+        /* MODALES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.55);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-cerrar-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .resumen-precio {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .resumen-precio strong {
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
+
+        .separador {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 15px 0;
+        }
+
+        .subtitulo-form {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .fila-dos-col {
+            display: flex;
+            gap: 12px;
+        }
+
+        .campo {
+            margin-bottom: 12px;
+            flex: 1;
+        }
+
+        .campo label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .campo input:focus,
+        .campo select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-secundario {
+            padding: 8px 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-confirmar {
+            padding: 8px 16px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo" onclick="mostrarTienda()">🧸 ToysWa Bolivia</a>
+            <div class="nav-acciones">
+                <span class="subtitulo" id="nav-subtitulo">Catálogo Online y Reservas</span>
+                <button class="btn-admin-toggle" id="btn-acceso-admin" onclick="gestionarAccesoAdmin()">
+                    🔐 Acceso Admin
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="alerta-global" class="alerta oculto">
+            <span id="texto-alerta"></span>
+            <button type="button" class="btn-cerrar-alerta" onclick="cerrarAlerta()">&times;</button>
+        </div>
+
+        <div id="vista-tienda">
+            <section class="filtros" id="barra-filtros">
+                <span class="filtros-titulo">Categorías:</span>
+                <button class="btn-filtro activo" onclick="filtrarCategoria('todos', this)">Todos</button>
+                <button class="btn-filtro" onclick="filtrarCategoria('Construcción', this)">Construcción</button>
+                <button class="btn-filtro" onclick="filtrarCategoria('Vehículos', this)">Vehículos</button>
+                <button class="btn-filtro" onclick="filtrarCategoria('Muñecas', this)">Muñecas</button>
+                <button class="btn-filtro" onclick="filtrarCategoria('Educativos', this)">Educativos</button>
+            </section>
+
+            <section class="galeria" id="galeria-productos"></section>
+        </div>
+
+        <section id="vista-admin" class="admin-panel oculto">
+            <div class="admin-header">
+                <div>
+                    <h2>⚙️ Panel de Administración ToysWa</h2>
+                    <small class="text-muted">Gestión de inventario, precios en Bs. y confirmación de pagos</small>
+                </div>
+                <div class="admin-tabs">
+                    <button class="btn-tab activo" id="tab-inventario" onclick="cambiarTabAdmin('inventario')">
+                        📦 Juguetes y Precios
+                    </button>
+                    <button class="btn-tab" id="tab-reservas" onclick="cambiarTabAdmin('reservas')">
+                        💳 Reservas y Pagos (<span id="contador-pendientes">0</span>)
+                    </button>
+                    <button class="btn-secundario" onclick="cerrarSesionAdmin()">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div id="seccion-admin-inventario" class="admin-grid-2">
+                <div class="card-admin">
+                    <h3>➕ Agregar Nuevo Juguete</h3>
+                    <form id="form-nuevo-juguete" onsubmit="agregarJuguete(event)">
+                        <div class="campo">
+                            <label>Nombre del Juguete *</label>
+                            <input type="text" id="new_nombre" placeholder="Ej: Robot Programable" required>
+                        </div>
+                        <div class="fila-dos-col">
+                            <div class="campo">
+                                <label>Marca *</label>
+                                <input type="text" id="new_marca" placeholder="Ej: Hasbro" required>
+                            </div>
+                            <div class="campo">
+                                <label>Icono (Emoji)</label>
+                                <select id="new_icono">
+                                    <option value="🧸">🧸 Peluche / General</option>
+                                    <option value="🚀">🚀 Espacial / Bloques</option>
+                                    <option value="🏎️">🏎️ Vehículo</option>
+                                    <option value="🩺">🩺 Muñeca / Rol</option>
+                                    <option value="🎨">🎨 Educativo / Arte</option>
+                                    <option value="🤖">🤖 Robot / Electrónico</option>
+                                    <option value="⚽">⚽ Deportes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="campo">
+                            <label>Categoría *</label>
+                            <select id="new_categoria" required>
+                                <option value="Construcción">Construcción</option>
+                                <option value="Vehículos">Vehículos</option>
+                                <option value="Muñecas">Muñecas</option>
+                                <option value="Educativos">Educativos</option>
+                            </select>
+                        </div>
+                        <div class="fila-dos-col">
+                            <div class="campo">
+                                <label>Edad Mínima *</label>
+                                <input type="number" id="new_edad_min" value="3" min="0" max="18" required>
+                            </div>
+                            <div class="campo">
+                                <label>Edad Máxima *</label>
+                                <input type="number" id="new_edad_max" value="10" min="1" max="99" required>
+                            </div>
+                        </div>
+                        <div class="fila-dos-col">
+                            <div class="campo">
+                                <label>Precio Venta (Bs.) *</label>
+                                <input type="number" id="new_precio" step="0.50" min="1" placeholder="150.00" required>
+                            </div>
+                            <div class="campo">
+                                <label>Stock Inicial *</label>
+                                <input type="number" id="new_stock" min="0" value="10" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-confirmar" style="width: 100%; margin-top: 6px;">
+                            Guardar en Catálogo
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card-admin">
+                    <h3>✏️ Editar Precios y Stock Actual</h3>
+                    <div class="tabla-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Juguete</th>
+                                    <th>Categoría</th>
+                                    <th>Precio (Bs.)</th>
+                                    <th>Stock</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-productos-admin"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="seccion-admin-reservas" class="card-admin oculto">
+                <h3>💳 Control de Reservas y Confirmación de Pagos</h3>
+                <div class="tabla-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Cliente (CI/NIT)</th>
+                                <th>Contacto</th>
+                                <th>Juguete / Cant.</th>
+                                <th>Sucursal</th>
+                                <th>Total (Bs.)</th>
+                                <th>Método Pago</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-reservas-admin"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-login-overlay" class="modal-overlay oculto">
+        <div class="modal" style="max-width: 380px;">
+            <div class="modal-header">
+                <h3>🔐 Acceso Administrativo</h3>
+                <button type="button" class="btn-cerrar-modal" onclick="cerrarModalLogin()">&times;</button>
+            </div>
+            <form onsubmit="validarLoginAdmin(event)">
+                <div class="modal-body">
+                    <div class="campo">
+                        <label>Usuario</label>
+                        <input type="text" id="admin_user" value="admin" required>
+                    </div>
+                    <div class="campo">
+                        <label>Contraseña</label>
+                        <input type="password" id="admin_pass" placeholder="Ingresa: admin123" required>
+                        <small style="color: var(--text-muted); display: block; margin-top: 4px;">
+                            Clave de demostración: <strong>admin123</strong>
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secundario" onclick="cerrarModalLogin()">Cancelar</button>
+                    <button type="submit" class="btn-confirmar">Ingresar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay oculto">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Reservar: <span id="modal-nombre"></span></h3>
+                <button type="button" class="btn-cerrar-modal" onclick="cerrarModal()">&times;</button>
+            </div>
+
+            <form id="form-reserva" onsubmit="procesarReserva(event)">
+                <input type="hidden" id="modal_producto_id">
+                <div class="modal-body">
+                    <div class="resumen-precio">
+                        <span>Precio Unitario:</span>
+                        <strong id="modal-precio">Bs. 0.00</strong>
+                    </div>
+
+                    <div class="fila-dos-col">
+                        <div class="campo" style="flex: 2;">
+                            <label for="sucursal">Sucursal de recojo *</label>
+                            <select id="sucursal" required>
+                                <option value="">Seleccione sucursal...</option>
+                                <option value="La Paz - Sucursal Sopocachi">La Paz - Sucursal Sopocachi</option>
+                                <option value="La Paz - Megacenter Irpavi">La Paz - Megacenter Irpavi</option>
+                                <option value="Cochabamba - Av. América">Cochabamba - Av. América</option>
+                                <option value="Santa Cruz - Equipetrol">Santa Cruz - Equipetrol</option>
+                            </select>
+                        </div>
+                        <div class="campo" style="flex: 1;">
+                            <label for="cantidad">Cantidad *</label>
+                            <input type="number" id="cantidad" value="1" min="1" required>
+                        </div>
+                    </div>
+
+                    <hr class="separador">
+                    <h4 class="subtitulo-form">Datos del Cliente</h4>
+
+                    <div class="campo">
+                        <label for="razon_social">Nombre Completo / Razón Social *</label>
+                        <input type="text" id="razon_social" placeholder="Ej: Juan Pérez" required>
+                    </div>
+
+                    <div class="fila-dos-col">
+                        <div class="campo" style="flex: 1;">
+                            <label for="tipo_doc">Tipo Doc. *</label>
+                            <select id="tipo_doc" required>
+                                <option value="CI">CI</option>
+                                <option value="NIT">NIT</option>
+                                <option value="CEX">CEX</option>
+                                <option value="PAS">PAS</option>
+                            </select>
+                        </div>
+                        <div class="campo" style="flex: 2;">
+                            <label for="num_doc">Número Documento *</label>
+                            <input type="text" id="num_doc" placeholder="Ej: 6789012" required>
+                        </div>
+                    </div>
+
+                    <div class="fila-dos-col">
+                        <div class="campo">
+                            <label for="telefono">Teléfono / WhatsApp *</label>
+                            <input type="text" id="telefono" placeholder="Ej: 71234567" required>
+                        </div>
+                        <div class="campo">
+                            <label for="correo">Correo Electrónico</label>
+                            <input type="email" id="correo" placeholder="opcional@correo.com">
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="metodo_pago">Método de Pago al recoger *</label>
+                        <select id="metodo_pago" required>
+                            <option value="QR Simple">QR Simple</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta Débito/Crédito">Tarjeta Débito/Crédito</option>
+                            <option value="Transferencia">Transferencia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secundario" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-confirmar">Confirmar Reserva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ESTADO INICIAL Y ALMACENAMIENTO LOCAL
+        // ==========================================
+        const productosIniciales = [
+            { id: 1, nombre: "Set Bloques Nave Espacial", marca: "LEGO", categoria: "Construcción", edadMin: 6, edadMax: 12, precio: 280.00, stock: 12, icono: "🚀", tema: "tema-azul" },
+            { id: 2, nombre: "Auto Todoterreno RC 4x4", marca: "Hot Wheels", categoria: "Vehículos", edadMin: 5, edadMax: 10, precio: 195.00, stock: 7, icono: "🏎️", tema: "tema-amarillo" },
+            { id: 3, nombre: "Muñeca Clínica Veterinaria", marca: "Mattel", categoria: "Muñecas", edadMin: 3, edadMax: 9, precio: 160.00, stock: 5, icono: "🩺", tema: "tema-rosa" },
+            { id: 4, nombre: "Pizarra Didáctica Magnética", marca: "Fisher-Price", categoria: "Educativos", edadMin: 2, edadMax: 6, precio: 120.00, stock: 0, icono: "🎨", tema: "tema-gris" }
+        ];
+
+        const reservasIniciales = [
+            {
+                id: 101,
+                cliente: "María Fernanda López",
+                documento: "CI 4829103",
+                telefono: "76543210",
+                productoId: 1,
+                productoNombre: "Set Bloques Nave Espacial",
+                cantidad: 1,
+                sucursal: "La Paz - Sucursal Sopocachi",
+                total: 280.00,
+                metodoPago: "QR Simple",
+                estado: "Reservada"
+            }
+        ];
+
+        let productos = JSON.parse(localStorage.getItem('toyswa_productos')) || productosIniciales;
+        let reservas = JSON.parse(localStorage.getItem('toyswa_reservas')) || reservasIniciales;
+        let categoriaActual = 'todos';
+        let adminAutenticado = false;
+
+        function guardarDatos() {
+            localStorage.setItem('toyswa_productos', JSON.stringify(productos));
+            localStorage.setItem('toyswa_reservas', JSON.stringify(reservas));
+        }
+
+        // ==========================================
+        // RENDERIZADO DE LA GALERÍA (CLIENTE)
+        // ==========================================
+        function renderizarGaleria() {
+            const contenedor = document.getElementById('galeria-productos');
+            contenedor.innerHTML = '';
+
+            const filtrados = categoriaActual === 'todos'
+                ? productos
+                : productos.filter(p => p.categoria === categoriaActual);
+
+            if (filtrados.length === 0) {
+                contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #6c757d; padding: 40px 0;">No hay juguetes registrados en esta categoría.</p>';
+                return;
+            }
+
+            filtrados.forEach(prod => {
+                const disponible = prod.stock > 0;
+                const card = document.createElement('article');
+                card.className = 'card-juguete';
+                card.innerHTML = `
+                    <div class="img-juguete ${prod.tema || 'tema-azul'}">
+                        <span class="icono-juguete">${prod.icono || '🧸'}</span>
+                        <span>${prod.nombre}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="marca">${prod.marca}</span>
+                            <span class="badge-edad">${prod.edadMin} - ${prod.edadMax} años</span>
+                        </div>
+                        <h3 class="titulo-juguete">${prod.nombre}</h3>
+                        <p class="categoria-texto">${prod.categoria}</p>
+                        
+                        <div class="card-footer">
+                            <div class="precio-stock">
+                                <span class="precio">Bs. ${Number(prod.precio).toFixed(2)}</span>
+                                <span class="badge-stock ${disponible ? 'disponible' : 'agotado'}">
+                                    ${disponible ? 'Stock: ' + prod.stock : 'Agotado'}
+                                </span>
+                            </div>
+                            <button class="btn-reservar" ${!disponible ? 'disabled' : ''} onclick="abrirModal(${prod.id})">
+                                ${disponible ? 'Reservar Juguete' : 'No disponible'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        function filtrarCategoria(categoria, boton) {
+            categoriaActual = categoria;
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+            boton.classList.add('activo');
+            renderizarGaleria();
+        }
+
+        // ==========================================
+        // PROCESO DE RESERVA (CLIENTE)
+        // ==========================================
+        function abrirModal(idProducto) {
+            const prod = productos.find(p => p.id === idProducto);
+            if (!prod || prod.stock <= 0) return;
+
+            document.getElementById('modal_producto_id').value = prod.id;
+            document.getElementById('modal-nombre').textContent = prod.nombre;
+            document.getElementById('modal-precio').textContent = 'Bs. ' + Number(prod.precio).toFixed(2);
+            
+            const inputCantidad = document.getElementById('cantidad');
+            inputCantidad.value = 1;
+            inputCantidad.max = prod.stock;
+            
+            document.getElementById('modal-overlay').classList.remove('oculto');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-overlay').classList.add('oculto');
+            document.getElementById('form-reserva').reset();
+        }
+
+        function procesarReserva(e) {
+            e.preventDefault();
+            const prodId = parseInt(document.getElementById('modal_producto_id').value);
+            const cantidad = parseInt(document.getElementById('cantidad').value);
+            const prod = productos.find(p => p.id === prodId);
+
+            if (!prod || prod.stock < cantidad) {
+                mostrarAlerta('No hay suficiente stock disponible.', true);
+                return;
+            }
+
+            // Descontar stock
+            prod.stock -= cantidad;
+
+            // Crear reserva
+            const nuevaReserva = {
+                id: reservas.length > 0 ? Math.max(...reservas.map(r => r.id)) + 1 : 101,
+                cliente: document.getElementById('razon_social').value.trim(),
+                documento: document.getElementById('tipo_doc').value + ' ' + document.getElementById('num_doc').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
+                productoId: prod.id,
+                productoNombre: prod.nombre,
+                cantidad: cantidad,
+                sucursal: document.getElementById('sucursal').value,
+                total: prod.precio * cantidad,
+                metodoPago: document.getElementById('metodo_pago').value,
+                estado: 'Reservada'
+            };
+
+            reservas.unshift(nuevaReserva);
+            guardarDatos();
+            renderizarGaleria();
+            cerrarModal();
+
+            mostrarAlerta(`¡Reserva #${nuevaReserva.id} confirmada! Apartaste ${cantidad}x "${prod.nombre}" (Bs. ${nuevaReserva.total.toFixed(2)}) en ${nuevaReserva.sucursal}.`);
+        }
+
+        // ==========================================
+        // ACCESO Y PANEL ADMINISTRATIVO
+        // ==========================================
+        function gestionarAccesoAdmin() {
+            if (adminAutenticado) {
+                const enAdmin = !document.getElementById('vista-admin').classList.contains('oculto');
+                if (enAdmin) {
+                    mostrarTienda();
+                } else {
+                    mostrarPanelAdmin();
+                }
+            } else {
+                document.getElementById('modal-login-overlay').classList.remove('oculto');
+            }
+        }
+
+        function cerrarModalLogin() {
+            document.getElementById('modal-login-overlay').classList.add('oculto');
+        }
+
+        function validarLoginAdmin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin_user').value.trim();
+            const pass = document.getElementById('admin_pass').value.trim();
+
+            if (user === 'admin' && pass === 'admin123') {
+                adminAutenticado = true;
+                cerrarModalLogin();
+                mostrarPanelAdmin();
+                mostrarAlerta('Bienvenido al Panel Administrativo de ToysWa.');
+            } else {
+                mostrarAlerta('Usuario o contraseña incorrectos (Usa: admin / admin123).', true);
+            }
+        }
+
+        function mostrarPanelAdmin() {
+            document.getElementById('vista-tienda').classList.add('oculto');
+            document.getElementById('vista-admin').classList.remove('oculto');
+            const btn = document.getElementById('btn-acceso-admin');
+            btn.textContent = '🏪 Ver Tienda';
+            btn.classList.add('activo');
+            renderizarAdminProductos();
+            renderizarAdminReservas();
+        }
+
+        function mostrarTienda() {
+            document.getElementById('vista-admin').classList.add('oculto');
+            document.getElementById('vista-tienda').classList.remove('oculto');
+            const btn = document.getElementById('btn-acceso-admin');
+            btn.textContent = adminAutenticado ? '⚙️ Panel Admin' : '🔐 Acceso Admin';
+            btn.classList.remove('activo');
+            renderizarGaleria();
+        }
+
+        function cerrarSesionAdmin() {
+            adminAutenticado = false;
+            mostrarTienda();
+            mostrarAlerta('Sesión administrativa cerrada.');
+        }
+
+        function cambiarTabAdmin(tab) {
+            document.getElementById('tab-inventario').classList.toggle('activo', tab === 'inventario');
+            document.getElementById('tab-reservas').classList.toggle('activo', tab === 'reservas');
+            document.getElementById('seccion-admin-inventario').classList.toggle('oculto', tab !== 'inventario');
+            document.getElementById('seccion-admin-reservas').classList.toggle('oculto', tab !== 'reservas');
+        }
+
+        // 1. Agregar juguete
+        function agregarJuguete(e) {
+            e.preventDefault();
+            const temas = ['tema-azul', 'tema-amarillo', 'tema-rosa', 'tema-verde'];
+            const temaAleatorio = temas[productos.length % temas.length];
+
+            const nuevo = {
+                id: productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1,
+                nombre: document.getElementById('new_nombre').value.trim(),
+                marca: document.getElementById('new_marca').value.trim(),
+                categoria: document.getElementById('new_categoria').value,
+                edadMin: parseInt(document.getElementById('new_edad_min').value),
+                edadMax: parseInt(document.getElementById('new_edad_max').value),
+                precio: parseFloat(document.getElementById('new_precio').value),
+                stock: parseInt(document.getElementById('new_stock').value),
+                icono: document.getElementById('new_icono').value,
+                tema: temaAleatorio
+            };
+
+            productos.unshift(nuevo);
+            guardarDatos();
+            document.getElementById('form-nuevo-juguete').reset();
+            renderizarAdminProductos();
+            mostrarAlerta(`Juguete "${nuevo.nombre}" agregado al catálogo correctamente.`);
+        }
+
+        // 2. Renderizar y editar precios/stock
+        function renderizarAdminProductos() {
+            const tbody = document.getElementById('tabla-productos-admin');
+            tbody.innerHTML = '';
+
+            productos.forEach(prod => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${prod.icono} ${prod.nombre}</strong><br><small style="color:#6c757d;">${prod.marca}</small></td>
+                    <td>${prod.categoria}</td>
+                    <td><input type="number" step="0.50" min="1" class="input-tabla" id="precio_${prod.id}" value="${Number(prod.precio).toFixed(2)}"></td>
+                    <td><input type="number" min="0" class="input-tabla" style="width:70px;" id="stock_${prod.id}" value="${prod.stock}"></td>
+                    <td>
+                        <button class="btn-sm btn-guardar" onclick="actualizarProducto(${prod.id})">Guardar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function actualizarProducto(id) {
+            const prod = productos.find(p => p.id === id);
+            if (!prod) return;
+
+            const nuevoPrecio = parseFloat(document.getElementById(`precio_${id}`).value);
+            const nuevoStock = parseInt(document.getElementById(`stock_${id}`).value);
+
+            if (isNaN(nuevoPrecio) || nuevoPrecio <= 0 || isNaN(nuevoStock) || nuevoStock < 0) {
+                mostrarAlerta('Ingresa valores válidos para precio y stock.', true);
+                return;
+            }
+
+            prod.precio = nuevoPrecio;
+            prod.stock = nuevoStock;
+            guardarDatos();
+            mostrarAlerta(`Actualizado: "${prod.nombre}" ahora cuesta Bs. ${nuevoPrecio.toFixed(2)} (Stock: ${nuevoStock}).`);
+        }
+
+        // 3. Confirmar o anular pagos de reservas
+        function renderizarAdminReservas() {
+            const tbody = document.getElementById('tabla-reservas-admin');
+            tbody.innerHTML = '';
+
+            const pendientes = reservas.filter(r => r.estado === 'Reservada').length;
+            document.getElementById('contador-pendientes').textContent = pendientes;
+
+            if (reservas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#6c757d;">No hay reservas registradas.</td></tr>';
+                return;
+            }
+
+            reservas.forEach(res => {
+                const tr = document.createElement('tr');
+                const esPendiente = res.estado === 'Reservada';
+                tr.innerHTML = `
+                    <td><strong>#${res.id}</strong></td>
+                    <td>${res.cliente}<br><small style="color:#6c757d;">${res.documento}</small></td>
+                    <td>${res.telefono}</td>
+                    <td>${res.cantidad}x ${res.productoNombre}</td>
+                    <td>${res.sucursal}</td>
+                    <td><strong>Bs. ${Number(res.total).toFixed(2)}</strong></td>
+                    <td>${res.metodoPago}</td>
+                    <td><span class="badge-estado estado-${res.estado}">${res.estado === 'Completada' ? 'Pagada / Entregada' : res.estado}</span></td>
+                    <td>
+                        ${esPendiente ? `
+                            <button class="btn-sm btn-pagar" onclick="cambiarEstadoReserva(${res.id}, 'Completada')">✓ Confirmar Pago</button>
+                            <button class="btn-sm btn-anular" onclick="cambiarEstadoReserva(${res.id}, 'Anulada')">✕ Anular</button>
+                        ` : '<small style="color:#6c757d;">Procesada</small>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function cambiarEstadoReserva(idReserva, nuevoEstado) {
+            const res = reservas.find(r => r.id === idReserva);
+            if (!res || res.estado !== 'Reservada') return;
+
+            res.estado = nuevoEstado;
+
+            // Si se anula la reserva, devolver el stock al inventario
+            if (nuevoEstado === 'Anulada') {
+                const prod = productos.find(p => p.id === res.productoId);
+                if (prod) prod.stock += res.cantidad;
+                renderizarAdminProductos();
+            }
+
+            guardarDatos();
+            renderizarAdminReservas();
+            mostrarAlerta(
+                nuevoEstado === 'Completada'
+                    ? `Pago confirmado para la reserva #${res.id} (Bs. ${Number(res.total).toFixed(2)}).`
+                    : `Reserva #${res.id} anulada y stock restaurado.`
+            );
+        }
+
+        // ==========================================
+        // ALERTAS
+        // ==========================================
+        function mostrarAlerta(texto, esError = false) {
+            const alerta = document.getElementById('alerta-global');
+            document.getElementById('texto-alerta').textContent = texto;
+            alerta.classList.toggle('error', esError);
+            alerta.classList.remove('oculto');
+        }
+
+        function cerrarAlerta() {
+            document.getElementById('alerta-global').classList.add('oculto');
+        }
+
+        // Inicializar vista
+        renderizarGaleria();
+        renderizarAdminReservas();
+    </script>
+</body>
+</html>
