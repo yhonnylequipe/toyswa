@@ -12,6 +12,8 @@ $db   = getenv('DB_NAME') ?: 'toyswa';
 $user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASS') ?: '';
 
+$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+
 $opciones = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -28,10 +30,10 @@ if (getenv('DB_HOST')) {
 }
 
 try {
-    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
     $pdo = new PDO($dsn, $user, $pass, $opciones);
+    $pdo->exec("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
 } catch (PDOException $e) {
-    die("Error de conexión a la base de datos: " . htmlspecialchars($e->getMessage()));
+    die("Error de conexión a la base de datos '$db': " . htmlspecialchars($e->getMessage()));
 }
 
 // ==========================================
