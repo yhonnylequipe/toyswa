@@ -64,6 +64,10 @@ function procesarSubidaFoto(string $inputName): ?string {
         return null;
     }
 
+    if ($_FILES[$inputName]['error'] === UPLOAD_ERR_INI_SIZE || $_FILES[$inputName]['error'] === UPLOAD_ERR_FORM_SIZE) {
+        throw new Exception("La imagen excede el límite permitido por el servidor (" . ini_get('upload_max_filesize') . ").");
+    }
+
     if ($_FILES[$inputName]['error'] !== UPLOAD_ERR_OK) {
         throw new Exception("Error al subir la imagen (código " . $_FILES[$inputName]['error'] . ").");
     }
@@ -85,20 +89,25 @@ function procesarSubidaFoto(string $inputName): ?string {
         throw new Exception("Formato de imagen no válido. Solo se permiten JPG, PNG o WEBP.");
     }
 
-    $carpeta = 'uploads';
-    if (!is_dir($carpeta) && !mkdir($carpeta, 0755, true)) {
-        throw new Exception("No se pudo crear la carpeta 'uploads/' en el servidor.");
+    $carpeta = __DIR__ . '/uploads';
+    if (!is_dir($carpeta)) {
+        if (!mkdir($carpeta, 0755, true)) {
+            throw new Exception("No se pudo crear la carpeta 'uploads/' en el servidor.");
+        }
+        // Bloquear ejecución de scripts dentro de uploads
+        file_put_contents($carpeta . '/.htaccess', "php_flag engine off\nOptions -Indexes\n");
     }
 
     $nombreArchivo = 'juguete_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $permitidos[$mime];
-    $rutaDestino   = $carpeta . '/' . $nombreArchivo;
+    $rutaFisica    = $carpeta . '/' . $nombreArchivo;
 
-    if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $rutaDestino)) {
+    if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $rutaFisica)) {
         throw new Exception("No se pudo guardar la imagen en el servidor.");
     }
 
-    return $rutaDestino;
+    return 'uploads/' . $nombreArchivo;
 }
+
 
 function estaLogueado(): bool {
     return !empty($_SESSION['usuario_id']) && !empty($_SESSION['usuario_rol']);
