@@ -284,7 +284,7 @@ if (esVendedorOAdmin()) {
                 <?php foreach ($productos as $prod): ?>
                     <?php
                         $disp = $prod['stock_total'] > 0;
-                        $tieneFoto = !empty($prod['imagen']) && file_exists($prod['imagen']);
+                        $tieneFoto = !empty($prod['imagen']));
                     ?>
                     <article class="card-juguete">
                         <div class="img-juguete <?= $tieneFoto ? 'con-foto' : '' ?>"
