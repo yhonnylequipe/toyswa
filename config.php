@@ -76,36 +76,16 @@ function procesarSubidaFoto(string $inputName): ?string {
         throw new Exception("La imagen supera el tamaño máximo permitido de 5 MB.");
     }
 
-    $permitidos = [
-        'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/webp' => 'webp'
-    ];
-
+    $permitidos = ['image/jpeg', 'image/png', 'image/webp'];
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime  = $finfo->file($_FILES[$inputName]['tmp_name']);
 
-    if (!isset($permitidos[$mime])) {
-        throw new Exception("Formato de imagen no válido. Solo se permiten JPG, PNG o WEBP.");
+    if (!in_array($mime, $permitidos, true)) {
+        throw new Exception("Formato no válido. Solo se permiten JPG, PNG o WEBP.");
     }
 
-    $carpeta = __DIR__ . '/uploads';
-    if (!is_dir($carpeta)) {
-        if (!mkdir($carpeta, 0755, true)) {
-            throw new Exception("No se pudo crear la carpeta 'uploads/' en el servidor.");
-        }
-        // Bloquear ejecución de scripts dentro de uploads
-        file_put_contents($carpeta . '/.htaccess', "php_flag engine off\nOptions -Indexes\n");
-    }
-
-    $nombreArchivo = 'juguete_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $permitidos[$mime];
-    $rutaFisica    = $carpeta . '/' . $nombreArchivo;
-
-    if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $rutaFisica)) {
-        throw new Exception("No se pudo guardar la imagen en el servidor.");
-    }
-
-    return 'uploads/' . $nombreArchivo;
+    $contenido = file_get_contents($_FILES[$inputName]['tmp_name']);
+    return 'data:' . $mime . ';base64,' . base64_encode($contenido);
 }
 
 
