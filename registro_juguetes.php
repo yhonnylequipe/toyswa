@@ -63,6 +63,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     // ... (Aplica la misma validación de precio_venta > 0 en 'actualizar_producto')
 }
+$categorias = $pdo->query("SELECT * FROM categorias ORDER BY nombre")->fetchAll();
+
+if (esVendedor()) {
+    $stmtSuc = $pdo->prepare("SELECT * FROM sucursales WHERE id_sucursal = ?");
+    $stmtSuc->execute([$_SESSION['usuario_suc']]);
+    $sucursales = $stmtSuc->fetchAll();
+} else {
+    $sucursales = $pdo->query("SELECT * FROM sucursales ORDER BY departamento, nombre")->fetchAll();
+}
+
+// Esta es la consulta que define $productos (asegúrate de que esté presente)
+$productos = $pdo->query("
+    SELECT p.*, COALESCE(SUM(i.stock_actual), 0) AS stock_total
+    FROM productos p
+    LEFT JOIN inventario i ON p.id_producto = i.id_producto
+    WHERE p.activo = 1
+    GROUP BY p.id_producto
+    ORDER BY p.id_producto DESC
+")->fetchAll();
+
+$invRows = $pdo->query("SELECT id_producto, id_sucursal, stock_actual FROM inventario")->fetchAll();
+$stockMapa = [];
+foreach ($invRows as $r) {
+    $stockMapa[$r['id_producto']][$r['id_sucursal']] = (int)$r['stock_actual'];
+}
 
 ?>
 <!DOCTYPE html>
