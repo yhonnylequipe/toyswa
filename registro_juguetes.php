@@ -282,7 +282,7 @@ foreach ($invRows as $r) {
                                 ?>
                                     <tr>
                                         <td>
-                                            <?php if (!empty($prod['imagen']) && file_exists($prod['imagen'])): ?>
+                                            <?php if (!empty($prod['imagen'])): ?>
                                                 <img src="<?= htmlspecialchars($prod['imagen']) ?>" alt="" class="mini-thumb">
                                             <?php else: ?>
                                                 <div class="mini-emoji"><?= htmlspecialchars($prod['icono'] ?? '🧸') ?></div>
