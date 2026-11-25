@@ -218,60 +218,76 @@ foreach ($invRows as $r) {
                 </div>
 
                 <div class="card-admin">
-                    <h3>✏️ Editar Fotos, Precios y Stock por Sucursal</h3>
-                    <div class="tabla-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Foto</th>
-                                    <th>Juguete</th>
-                                    <th>Cambiar Foto</th>
-                                    <th>Precio (Bs.)</th>
-                                    <th>Sucursal</th>
-                                    <th>Stock</th>
-                                    <th>Guardar</th>
-                                </tr>
-                            </thead>
-                           <tbody>
-<?php foreach ($productos as $prod): 
-    $formId = "form-editar-" . $prod['id_producto'];
-?>
-    <tr>
-        <td>
-            <?php if (!empty($prod['imagen']) && file_exists($prod['imagen'])): ?>
-                <img src="<?= htmlspecialchars($prod['imagen']) ?>" alt="" class="mini-thumb">
-            <?php else: ?>
-                <div class="mini-emoji"><?= htmlspecialchars($prod['icono'] ?? '🧸') ?></div>
-            <?php endif; ?>
-        </td>
-        <td>
-            <strong><?= htmlspecialchars($prod['nombre']) ?></strong><br>
-            <small style="color:#6c757d;">Total: <?= $prod['stock_total'] ?> unid.</small>
-        </td>
-        <td>
-            <input type="file" form="<?= $formId ?>" name="foto" accept="image/jpeg,image/png,image/webp" class="input-file-tabla">
-        </td>
-        <td>
-            <input type="number" form="<?= $formId ?>" step="0.01" min="1" name="precio_venta" class="input-tabla" value="<?= number_format($prod['precio_venta'], 2, '.', '') ?>" required>
-        </td>
-        <td>
-            <select form="<?= $formId ?>" name="id_sucursal" class="select-tabla" onchange="cambiarStockInput(this, <?= $prod['id_producto'] ?>)">
-                <?php foreach ($sucursales as $suc): ?>
-                    <option value="<?= $suc['id_sucursal'] ?>">
-                        <?= htmlspecialchars($suc['departamento'] . ' - ' . $suc['nombre']) ?>
-                    </option>
+    <h3>✏️ Editar Fotos, Precios y Stock por Sucursal</h3>
+    <div class="tabla-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Juguete</th>
+                    <th>Cambiar Foto</th>
+                    <th>Precio (Bs.)</th>
+                    <th>Sucursal</th>
+                    <th>Stock</th>
+                    <th>Guardar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($productos as $prod): 
+                    $fId = "form-prod-" . $prod['id_producto'];
+                ?>
+                <tr>
+                    <td>
+                        <?php if (!empty($prod['imagen']) && file_exists($prod['imagen'])): ?>
+                            <img src="<?= htmlspecialchars($prod['imagen']) ?>" alt="" class="mini-thumb">
+                        <?php else: ?>
+                            <div class="mini-emoji"><?= htmlspecialchars($prod['icono'] ?? '🧸') ?></div>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <strong><?= htmlspecialchars($prod['nombre']) ?></strong><br>
+                        <small style="color:#6c757d;">Total: <?= $prod['stock_total'] ?> unid.</small>
+                    </td>
+                    <td>
+                        <input type="file" form="<?= $fId ?>" name="foto" accept="image/jpeg,image/png,image/webp" class="input-file-tabla">
+                    </td>
+                    <td>
+                        <input type="number" form="<?= $fId ?>" step="0.01" min="1" name="precio_venta" class="input-tabla" value="<?= number_format($prod['precio_venta'], 2, '.', '') ?>" required>
+                    </td>
+                    <td>
+                        <select form="<?= $fId ?>" name="id_sucursal" class="select-tabla" onchange="cambiarStockInput(this, <?= $prod['id_producto'] ?>)">
+                            <?php foreach ($sucursales as $suc): ?>
+                                <option value="<?= $suc['id_sucursal'] ?>">
+                                    <?= htmlspecialchars($suc['departamento'] . ' - ' . $suc['nombre']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                    <td>
+                        <?php $primerSucId = $sucursales['id_sucursal'] ?? 0; ?>
+                        <input type="number" form="<?= $fId ?>" min="0" name="stock_actual" id="admin_stock_<?= $prod['id_producto'] ?>" class="input-tabla" style="width:60px;" value="<?= $stockMapa[$prod['id_producto']][$primerSucId] ?? 0 ?>" required>
+                    </td>
+                    <td>
+                        <button type="submit" form="<?= $fId ?>" class="btn-sm btn-guardar">Guardar</button>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
-            </select>
-        </td>
-        <td>
-            <?php $primerSucId = $sucursales[0]['id_sucursal'] ?? 0; ?>
-            <input type="number" form="<?= $formId ?>" min="0" name="stock_actual" id="admin_stock_<?= $prod['id_producto'] ?>" class="input-tabla" style="width:60px;" value="<?= $stockMapa[$prod['id_producto']][$primerSucId] ?? 0 ?>" required>
-        </td>
-        <td>
-            <button type="submit" form="<?= $formId ?>" class="btn-sm btn-guardar">Guardar</button>
-        </td>
-    </tr>
-<?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!-- Formularios reales fuera de la tabla -->
+        <?php foreach ($productos as $prod): ?>
+            <form id="form-prod-<?= $prod['id_producto'] ?>" method="POST" action="registro_juguetes.php" enctype="multipart/form-data">
+                <input type="hidden" name="accion" value="actualizar_producto">
+                <input type="hidden" name="id_producto" value="<?= $prod['id_producto'] ?>">
+                <?php if (!empty($_SESSION['csrf_token'])): ?>
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                <?php endif; ?>
+            </form>
+        <?php endforeach; ?>
+    </div>
+</div>
+
 </tbody>
 </table>
 
