@@ -234,7 +234,7 @@ foreach ($invRows as $r) {
                             </thead>
                            <tbody>
 <?php foreach ($productos as $prod): 
-    $formId = "form-prod-" . $prod['id_producto'];
+    $formId = "form-editar-" . $prod['id_producto'];
 ?>
     <tr>
         <td>
@@ -275,14 +275,17 @@ foreach ($invRows as $r) {
 </tbody>
 </table>
 
-<!-- Formularios declarados fuera de la tabla -->
+<!-- Formularios válidos fuera de la tabla -->
 <?php foreach ($productos as $prod): ?>
-    <form id="form-prod-<?= $prod['id_producto'] ?>" method="POST" action="registro_juguetes.php" enctype="multipart/form-data" style="display:none;">
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+    <form id="form-editar-<?= $prod['id_producto'] ?>" method="POST" action="registro_juguetes.php" enctype="multipart/form-data" style="display:none;">
         <input type="hidden" name="accion" value="actualizar_producto">
         <input type="hidden" name="id_producto" value="<?= $prod['id_producto'] ?>">
+        <?php if (!empty($_SESSION['csrf_token'])): ?>
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <?php endif; ?>
     </form>
 <?php endforeach; ?>
+
 
                     </div>
                 </div>
