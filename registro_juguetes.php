@@ -138,25 +138,38 @@ foreach ($invRows as $r) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro de Juguetes - ToysWa Bolivia</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d6efd">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <style>
+        .nav-saludo { font-size: 0.85rem; }
+        .sub-info-movil { display: none; font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+        @media (max-width: 600px) {
+            .nav-acciones .btn-nav:not(.btn-salir-movil) { display: none; }
+            .nav-saludo { font-size: 0.78rem; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .sub-info-movil { display: block; }
+            .tabla-inventario th:nth-child(1),
+            .tabla-inventario td:nth-child(1) { padding: 8px 6px; }
+            .btn-guardar { width: 100%; padding: 8px; }
+        }
+    </style>
 </head>
 <body>
     <header class="navbar">
         <div class="container navbar-content">
             <a href="index.php" class="logo">🧸 ToysWa Bolivia</a>
             <div class="nav-acciones">
-                <span style="font-size:0.85rem;">Hola, <strong><?= htmlspecialchars($_SESSION['usuario_nombre']) ?></strong> (<?= strtoupper($_SESSION['usuario_rol']) ?>)</span>
+                <span class="nav-saludo">Hola, <strong><?= htmlspecialchars($_SESSION['usuario_nombre']) ?></strong> (<?= strtoupper($_SESSION['usuario_rol']) ?>)</span>
                 <a href="index.php" class="btn-nav">🏪 Ver Tienda / Reservas</a>
                 <a href="registro_juguetes.php" class="btn-nav activo">📦 Registro Juguetes</a>
                 <?php if (esAdmin()): ?>
                     <a href="registro_vendedor.php" class="btn-nav">👤 Vendedores</a>
                 <?php endif; ?>
-                <a href="login.php?logout=1" class="btn-nav">🚪 Cerrar Sesión</a>
+                <a href="login.php?logout=1" class="btn-nav btn-salir-movil">🚪 Salir</a>
             </div>
         </div>
     </header>
@@ -170,49 +183,45 @@ foreach ($invRows as $r) {
         <?php endif; ?>
 
         <div class="panel-box">
-            <h2 style="margin-bottom: 18px;">📦 Gestión y Registro de Juguetes</h2>
+            <h2 style="margin-bottom: 18px; font-size: 1.25rem;">📦 Gestión y Registro de Juguetes</h2>
             <div class="admin-grid-2">
                 <div class="card-admin">
                     <h3>➕ Agregar Nuevo Juguete</h3>
                     <form method="POST" action="registro_juguetes.php" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <input type="hidden" name="accion" value="agregar_juguete">
+
                         <div class="fila-dos-col">
                             <div class="campo" style="flex:2;">
                                 <label>Nombre del Juguete *</label>
                                 <input type="text" name="nombre" required placeholder="Ej: Robot Solar">
                             </div>
                             <div class="campo" style="flex:1;">
-                                <label>Icono</label>
+                                <label>Ícono</label>
                                 <select name="icono">
-                                    <option value="🧸">🧸</option>
-                                    <option value="🚀">🚀</option>
-                                    <option value="🏎️">🏎️</option>
-                                    <option value="🩺">🩺</option>
-                                    <option value="🎨">🎨</option>
-                                    <option value="🤖">🤖</option>
-                                    <option value="⚽">⚽</option>
+                                    <option value="🧸">🧸 Oso</option>
+                                    <option value="🚗">🚗 Auto</option>
+                                    <option value="🤖">🤖 Robot</option>
+                                    <option value="🪆">🪆 Muñeca</option>
+                                    <option value="🧱">🧱 Bloques</option>
+                                    <option value="🎲">🎲 Mesa</option>
+                                    <option value="⚽">⚽ Pelota</option>
+                                    <option value="🎨">🎨 Arte</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="campo">
-                            <label>📷 Foto del Juguete (JPG, PNG, WEBP - Máx. 5MB)</label>
-                            <input type="file" name="foto" accept="image/jpeg,image/png,image/webp" onchange="previsualizarFoto(this, 'preview-nuevo')">
-                            <div id="preview-nuevo" class="preview-box">
-                                <img src="" alt="Vista previa">
-                                <small style="color: var(--primary); font-weight: 600;">Vista previa lista para subir</small>
-                            </div>
-                        </div>
+
                         <div class="fila-dos-col">
                             <div class="campo">
-                                <label>Código Barras</label>
-                                <input type="text" name="codigo_barras" placeholder="Opcional">
+                                <label>Marca</label>
+                                <input type="text" name="marca" placeholder="Ej: Lego, Mattel">
                             </div>
                             <div class="campo">
-                                <label>Marca *</label>
-                                <input type="text" name="marca" required placeholder="Ej: LEGO">
+                                <label>Código de Barras</label>
+                                <input type="text" name="codigo_barras" inputmode="numeric" placeholder="Opcional">
                             </div>
                         </div>
+
                         <div class="campo">
                             <label>Categoría *</label>
                             <select name="id_categoria" required>
@@ -221,127 +230,176 @@ foreach ($invRows as $r) {
                                 <?php endforeach; ?>
                             </select>
                         </div>
+
                         <div class="fila-dos-col">
                             <div class="campo">
-                                <label>Edad Mín.</label>
-                                <input type="number" name="edad_minima" value="3" min="0" required>
+                                <label>Edad Mín. (años)</label>
+                                <input type="number" name="edad_minima" inputmode="numeric" value="3" min="0" max="99" required>
                             </div>
                             <div class="campo">
-                                <label>Edad Máx.</label>
-                                <input type="number" name="edad_maxima" value="12" min="1" required>
+                                <label>Edad Máx. (años)</label>
+                                <input type="number" name="edad_maxima" inputmode="numeric" value="12" min="0" max="99" required>
                             </div>
                         </div>
+
                         <div class="fila-dos-col">
                             <div class="campo">
-                                <label>Precio Compra (Bs.) *</label>
-                                <input type="number" step="0.01" min="0" name="precio_compra" required placeholder="100.00">
+                                <label>Precio Compra (Bs)</label>
+                                <input type="number" step="0.01" inputmode="decimal" name="precio_compra" value="0.00" min="0">
                             </div>
                             <div class="campo">
-                                <label>Precio Venta (Bs.) *</label>
-                                <input type="number" step="0.01" min="1" name="precio_venta" required placeholder="150.00">
+                                <label>Precio Venta (Bs) *</label>
+                                <input type="number" step="0.01" inputmode="decimal" name="precio_venta" required min="0.1" placeholder="0.00">
                             </div>
                         </div>
+
                         <div class="fila-dos-col">
-                            <div class="campo" style="flex:2;">
-                                <label>Sucursal Stock Inicial *</label>
+                            <div class="campo">
+                                <label>Sucursal Inicial *</label>
                                 <select name="id_sucursal_inicial" required>
                                     <?php foreach ($sucursales as $suc): ?>
                                         <option value="<?= $suc['id_sucursal'] ?>">
-                                            <?= htmlspecialchars($suc['departamento'] . ' - ' . $suc['nombre']) ?>
+                                            <?= htmlspecialchars($suc['nombre'] . ' (' . $suc['departamento'] . ')') ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="campo" style="flex:1;">
-                                <label>Cantidad *</label>
-                                <input type="number" name="stock_inicial" value="10" min="0" required>
+                            <div class="campo">
+                                <label>Stock Inicial *</label>
+                                <input type="number" name="stock_inicial" inputmode="numeric" value="1" min="0" required>
                             </div>
                         </div>
-                        <button type="submit" class="btn-confirmar" style="width:100%;">Guardar Juguete</button>
+
+                        <div class="campo">
+                            <label>Foto del Juguete (Cámara o Galería)</label>
+                            <input type="file" name="foto" accept="image/*" onchange="previsualizarFoto(this)">
+                            <div id="previewNuevaFoto" class="preview-box">
+                                <img id="imgPreviewNueva" src="" alt="Vista previa">
+                                <span style="font-size: 0.8rem; color: var(--primary);">Vista previa lista para subir</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-confirmar" style="width: 100%; margin-top: 6px;">💾 Guardar Juguete</button>
                     </form>
                 </div>
 
                 <div class="card-admin">
-                    <h3>✏️ Editar Fotos, Precios y Stock por Sucursal</h3>
+                    <h3>📋 Catálogo e Inventario por Sucursal</h3>
                     <div class="tabla-responsive">
-                        <table>
+                        <table class="tabla-inventario">
                             <thead>
                                 <tr>
                                     <th>Foto</th>
                                     <th>Juguete</th>
-                                    <th>Cambiar Foto</th>
-                                    <th>Precio (Bs.)</th>
                                     <th>Sucursal</th>
                                     <th>Stock</th>
-                                    <th>Guardar</th>
+                                    <th>Precio (Bs)</th>
+                                    <th>Nueva Foto</th>
+                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($productos as $prod): 
-                                    $fId = "form-prod-" . $prod['id_producto'];
+                                    $idProd = (int)$prod['id_producto'];
+                                    $sucDefault = $sucursales['id_sucursal'] ?? 0;
+                                    $stockInicialFila = $stockMapa[$idProd][$sucDefault] ?? 0;
                                 ?>
-                                    <tr>
+                                <tr>
+                                    <form method="POST" action="registro_juguetes.php" enctype="multipart/form-data">
+                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                        <input type="hidden" name="accion" value="actualizar_producto">
+                                        <input type="hidden" name="id_producto" value="<?= $idProd ?>">
+
                                         <td>
-                                            <?php if (!empty($prod['imagen'])): ?>
-                                                <img src="<?= htmlspecialchars($prod['imagen']) ?>" alt="" class="mini-thumb">
+                                            <?php if (!empty($prod['imagen']) && file_exists($prod['imagen'])): ?>
+                                                <img src="<?= htmlspecialchars($prod['imagen']) ?>" class="mini-thumb" alt="Foto" onclick="abrirLightbox(this.src, '<?= htmlspecialchars(addslashes($prod['nombre'])) ?>')">
                                             <?php else: ?>
-                                                <div class="mini-emoji"><?= htmlspecialchars($prod['icono'] ?? '🧸') ?></div>
+                                                <div class="mini-emoji"><?= htmlspecialchars($prod['icono'] ?: '🧸') ?></div>
                                             <?php endif; ?>
                                         </td>
+
                                         <td>
-                                            <strong><?= htmlspecialchars($prod['nombre']) ?></strong><br>
-                                            <small style="color:#6c757d;">Total: <?= $prod['stock_total'] ?> unid.</small>
+                                            <strong><?= htmlspecialchars($prod['nombre']) ?></strong>
+                                            <div style="font-size: 0.76rem; color: var(--text-muted);">
+                                                <?= htmlspecialchars($prod['marca'] ?: 'Sin marca') ?> • Total: <strong><?= (int)$prod['stock_total'] ?></strong>
+                                            </div>
                                         </td>
+
                                         <td>
-                                            <input type="file" form="<?= $fId ?>" name="foto" accept="image/jpeg,image/png,image/webp" class="input-file-tabla">
-                                        </td>
-                                        <td>
-                                            <input type="number" form="<?= $fId ?>" step="0.01" min="1" name="precio_venta" class="input-tabla" value="<?= number_format($prod['precio_venta'], 2, '.', '') ?>" required>
-                                        </td>
-                                        <td>
-                                            <select form="<?= $fId ?>" name="id_sucursal" class="select-tabla" onchange="cambiarStockInput(this, <?= $prod['id_producto'] ?>)">
+                                            <select name="id_sucursal" class="select-tabla" onchange="cambiarStockSucursal(this, <?= $idProd ?>)">
                                                 <?php foreach ($sucursales as $suc): ?>
-                                                    <option value="<?= $suc['id_sucursal'] ?>">
-                                                        <?= htmlspecialchars($suc['departamento'] . ' - ' . $suc['nombre']) ?>
-                                                    </option>
+                                                    <option value="<?= $suc['id_sucursal'] ?>"><?= htmlspecialchars($suc['nombre']) ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </td>
+
                                         <td>
-                                            <?php $primerSucId = $sucursales['id_sucursal'] ?? 0; ?>
-                                            <input type="number" form="<?= $fId ?>" min="0" name="stock_actual" id="admin_stock_<?= $prod['id_producto'] ?>" class="input-tabla" style="width:60px;" value="<?= $stockMapa[$prod['id_producto']][$primerSucId] ?? 0 ?>" required>
+                                            <input type="number" name="stock_actual" id="stock_<?= $idProd ?>" class="input-tabla" inputmode="numeric" min="0" value="<?= $stockInicialFila ?>">
                                         </td>
+
                                         <td>
-                                            <button type="submit" form="<?= $fId ?>" class="btn-sm btn-guardar">Guardar</button>
+                                            <input type="number" step="0.01" name="precio_venta" class="input-tabla" inputmode="decimal" min="0.1" value="<?= number_format((float)$prod['precio_venta'], 2, '.', '') ?>">
                                         </td>
-                                    </tr>
+
+                                        <td>
+                                            <input type="file" name="foto" accept="image/*" class="input-file-tabla">
+                                        </td>
+
+                                        <td>
+                                            <button type="submit" class="btn-sm btn-guardar">Actualizar</button>
+                                        </td>
+                                    </form>
+                                </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
-
-                        <?php foreach ($productos as $prod): ?>
-                            <form id="form-prod-<?= $prod['id_producto'] ?>" method="POST" action="registro_juguetes.php" enctype="multipart/form-data">
-                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                <input type="hidden" name="accion" value="actualizar_producto">
-                                <input type="hidden" name="id_producto" value="<?= $prod['id_producto'] ?>">
-                            </form>
-                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <nav class="app-bottom-nav">
+        <a href="index.php" class="app-tab">
+            <span class="tab-icon">🏪</span>
+            <span>Tienda</span>
+        </a>
+        <a href="registro_juguetes.php" class="app-tab activo">
+            <span class="tab-icon">📦</span>
+            <span>Inventario</span>
+        </a>
+        <?php if (esAdmin()): ?>
+        <a href="registro_vendedor.php" class="app-tab">
+            <span class="tab-icon">👤</span>
+            <span>Vendedores</span>
+        </a>
+        <?php endif; ?>
+    </nav>
+
+    <div id="lightbox" class="lightbox-overlay oculto" onclick="cerrarLightbox()">
+        <button type="button" class="lightbox-cerrar" onclick="cerrarLightbox()">&times;</button>
+        <div class="lightbox-contenido" onclick="event.stopPropagation()">
+            <img id="lightboxImg" src="" alt="Juguete">
+            <div id="lightboxTitulo" class="lightbox-titulo"></div>
+        </div>
+    </div>
+
     <script>
-        const inventarioSucursales = <?= json_encode($stockMapa) ?>;
-        function cambiarStockInput(selectEl, prodId) {
-            const sucId = selectEl.value;
-            const stock = (inventarioSucursales[prodId] && inventarioSucursales[prodId][sucId]) || 0;
-            document.getElementById('admin_stock_' + prodId).value = stock;
+        const stockMapa = <?= json_encode($stockMapa) ?>;
+
+        function cambiarStockSucursal(selectEl, idProducto) {
+            const idSuc = selectEl.value;
+            const inputStock = document.getElementById('stock_' + idProducto);
+            if (inputStock) {
+                inputStock.value = (stockMapa[idProducto] && stockMapa[idProducto][idSuc] !== undefined)
+                    ? stockMapa[idProducto][idSuc]
+                    : 0;
+            }
         }
-        function previsualizarFoto(input, previewId) {
-            const box = document.getElementById(previewId);
-            const img = box.querySelector('img');
+
+        function previsualizarFoto(input) {
+            const box = document.getElementById('previewNuevaFoto');
+            const img = document.getElementById('imgPreviewNueva');
             if (input.files && input.files) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -353,39 +411,15 @@ foreach ($invRows as $r) {
                 box.style.display = 'none';
             }
         }
-    </script>
 
-    <nav class="app-bottom-nav">
-        <a href="index.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'activo' : '' ?>">
-            <span class="tab-icon">🏪</span>
-            <span>Catálogo</span>
-        </a>
-        <?php if (estaLogueado()): ?>
-            <a href="registro_juguetes.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'registro_juguetes.php' ? 'activo' : '' ?>">
-                <span class="tab-icon">📦</span>
-                <span>Juguetes</span>
-            </a>
-            <?php if (esAdmin()): ?>
-                <a href="registro_vendedor.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'registro_vendedor.php' ? 'activo' : '' ?>">
-                    <span class="tab-icon">👥</span>
-                    <span>Vendedores</span>
-                </a>
-            <?php endif; ?>
-            <a href="login.php?logout=1" class="app-tab">
-                <span class="tab-icon">🚪</span>
-                <span>Salir</span>
-            </a>
-        <?php else: ?>
-            <a href="login.php" class="app-tab <?= basename($_SERVER['PHP_SELF']) === 'login.php' ? 'activo' : '' ?>">
-                <span class="tab-icon">🔐</span>
-                <span>Ingresar</span>
-            </a>
-        <?php endif; ?>
-    </nav>
+        function abrirLightbox(src, titulo) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxTitulo').textContent = titulo;
+            document.getElementById('lightbox').classList.remove('oculto');
+        }
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
+        function cerrarLightbox() {
+            document.getElementById('lightbox').classList.add('oculto');
         }
     </script>
 </body>
