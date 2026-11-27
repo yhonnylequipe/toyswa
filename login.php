@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="index.php" class="logo">🧸 ToysWa Bolivia</a>
             <div class="nav-acciones">
                 <a href="index.php" class="btn-nav">🏪 Volver a la Tienda</a>
-                <a href="registro_vendedor.php" class="btn-nav">👤 Registrar Vendedor</a>
+                
             </div>
         </div>
     </header>
