@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="login.php">
                 <div class="campo">
                     <label>Usuario *</label>
-                    <input type="text" name="usuario" required placeholder="Ej: admin o vendedor1" autofocus>
+                    <input type="text" name="usuario" required placeholder="" autofocus>
                 </div>
                 <div class="campo">
                     <label>Contraseña *</label>
@@ -104,8 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <hr class="separador">
             <p style="text-align:center; margin-bottom:0;">
-                ¿Eres vendedor nuevo? <a href="registro_vendedor.php" style="color:var(--primary); font-weight:600;">Regístrate aquí</a>
-            </p>
+                </p>
         </div>
     </main>
 
