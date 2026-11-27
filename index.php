@@ -184,7 +184,6 @@ if (esVendedorOAdmin()) {
                     
                     <a href="login.php?logout=1" class="btn-nav">🚪 Salir</a>
                 <?php else: ?>
-                    <a href="registro_vendedor.php" class="btn-nav">👤 Registro Vendedor</a>
                     <a href="login.php" class="btn-nav activo">🔐 Iniciar Sesión</a>
                 <?php endif; ?>
             </div>
