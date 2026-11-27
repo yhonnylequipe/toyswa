@@ -181,7 +181,7 @@ if (esVendedorOAdmin()) {
                 <?php if (estaLogueado()): ?>
                     <span style="font-size:0.85rem;">👤 <?= htmlspecialchars($_SESSION['usuario_nombre']) ?></span>
                     <a href="registro_juguetes.php" class="btn-nav activo">📦 Registrar Juguetes</a>
-                    <a href="registro_vendedor.php" class="btn-nav">👥 Vendedores</a>
+                    
                     <a href="login.php?logout=1" class="btn-nav">🚪 Salir</a>
                 <?php else: ?>
                     <a href="registro_vendedor.php" class="btn-nav">👤 Registro Vendedor</a>
